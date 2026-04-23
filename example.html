@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VSW Webstudio SVG Path Embed</title>
+    <style>
+      :root {
+        --bg: #f7f3ed;
+        --text: #1e1b18;
+        --muted: rgba(30, 27, 24, 0.62);
+        --line: rgba(30, 27, 24, 0.12);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        overflow-x: hidden;
+        color: var(--text);
+        font-family: Georgia, "Times New Roman", serif;
+        background: linear-gradient(180deg, #fbf8f2 0%, var(--bg) 42%, #efe3d8 100%);
+      }
+
+      .dv-path-layer {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+      }
+
+      .dv-path-layer svg {
+        width: 100%;
+        height: 100%;
+        overflow: visible;
+      }
+
+      .page {
+        position: relative;
+        z-index: 1;
+      }
+
+      .hero,
+      .section {
+        min-height: 100svh;
+        display: grid;
+        align-items: center;
+        padding: 4rem 1.5rem;
+      }
+
+      .inner {
+        width: min(1080px, 100%);
+        margin: 0 auto;
+      }
+
+      .hero h1,
+      .section h2,
+      .section p {
+        margin: 0;
+      }
+
+      .hero h1 {
+        max-width: 11ch;
+        font-size: clamp(3rem, 9vw, 7rem);
+        line-height: 0.94;
+      }
+
+      .section .inner {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: clamp(2rem, 5vw, 5rem);
+        align-items: center;
+      }
+
+      .section h2 {
+        max-width: 11ch;
+        font-size: clamp(2.2rem, 6vw, 4.6rem);
+        line-height: 0.96;
+      }
+
+      .section p {
+        max-width: 30rem;
+        margin-top: 1rem;
+        color: var(--muted);
+        font-size: 1.05rem;
+        line-height: 1.7;
+      }
+
+      .visual {
+        aspect-ratio: 4 / 5;
+        border: 1px solid var(--line);
+        border-radius: 24px;
+        background:
+          radial-gradient(circle at 35% 28%, rgba(255, 106, 61, 0.22), transparent 35%),
+          linear-gradient(145deg, rgba(255, 255, 255, 0.86), rgba(255, 255, 255, 0.34));
+        box-shadow: 0 22px 60px rgba(84, 48, 31, 0.08);
+      }
+
+      @media (max-width: 820px) {
+        .section .inner {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Paste this script once in Webstudio Project Settings > Custom Code > Before </body>. -->
+    <script src="./dist/svg-path-webstudio.js"></script>
+
+    <!-- Paste this SVG in a Webstudio HTML Embed. -->
+    <div class="dv-path-layer" aria-hidden="true">
+      <svg viewBox="0 0 1440 1000" preserveAspectRatio="none">
+        <defs>
+          <linearGradient
+            id="scroll-gradient"
+            x1="420"
+            y1="80"
+            x2="650"
+            y2="930"
+            gradientUnits="userSpaceOnUse"
+          >
+            <stop offset="0%" stop-color="#ffd166"></stop>
+            <stop offset="35%" stop-color="#ff6a3d"></stop>
+            <stop offset="68%" stop-color="#ff2fb3"></stop>
+            <stop offset="100%" stop-color="#d83bd2"></stop>
+          </linearGradient>
+        </defs>
+
+        <path
+          dv-path
+          dv-path-trigger=".page"
+          dv-path-start="top top"
+          dv-path-end="bottom bottom"
+          dv-path-scrub="1.1"
+          dv-path-gradient="#scroll-gradient"
+          dv-path-gradient-center="720 500"
+          fill="none"
+          stroke="url(#scroll-gradient)"
+          stroke-width="12"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M 420 80 C 540 130, 700 180, 800 280 S 1080 470, 970 610 S 510 760, 650 930"
+        ></path>
+      </svg>
+    </div>
+
+    <main class="page">
+      <section class="hero">
+        <div class="inner" dv-reveal dv-reveal-stagger="0.08">
+          <h1>SVG path animation for Webstudio.</h1>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="inner" dv-reveal dv-reveal-stagger="0.08">
+          <div>
+            <h2>Target the wrapper.</h2>
+            <p>
+              The path uses custom attributes, so the same CDN script can animate any SVG path you place in an
+              embed.
+            </p>
+          </div>
+          <div class="visual"></div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="inner" dv-reveal dv-reveal-stagger="0.08">
+          <div>
+            <h2>Control the timing.</h2>
+            <p>
+              Change the trigger, start, end, scrub, path direction, and gradient rotation without editing the
+              JavaScript.
+            </p>
+          </div>
+          <div class="visual"></div>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
