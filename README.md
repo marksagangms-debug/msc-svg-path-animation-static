@@ -102,28 +102,23 @@ Add this in Webstudio custom CSS:
   height: 100%;
   overflow: visible;
 }
-
-.msc-page {
-  position: relative;
-  z-index: 1;
-}
 ```
 
-## 4) Add the Page Wrapper Class
+## 4) Optional Page Wrapper Class
 
-Select the main wrapper that contains your page sections and add this class:
+You can skip this step for the simple setup. If your page has a main wrapper that contains all scroll sections, you can add this class:
 
 ```text
 msc-page
 ```
 
-By default, the SVG path uses this trigger:
+The script will use `.msc-page` when it exists. If it does not exist, the script uses the full document scroll instead.
+
+You only need a custom trigger when you want the path timing tied to one specific wrapper:
 
 ```html
-dv-path-trigger=".msc-page"
+dv_path_trigger=".your-wrapper"
 ```
-
-So you do not need to add `dv-path-trigger` manually. Just make sure the main wrapper has class `msc-page`.
 
 ## Simple Attribute Setup
 
@@ -158,7 +153,7 @@ In Webstudio attributes, that means:
 
 These are built-in defaults, so you usually do not need to add them:
 
-- `dv-path-trigger=".msc-page"`: the Webstudio element that controls the scroll range.
+- Trigger: `.msc-page` if it exists, otherwise the full document scroll.
 - `dv-path-start="top top"`: starts when the trigger top reaches the viewport top.
 - `dv-path-end="bottom bottom"`: ends when the trigger bottom reaches the viewport bottom.
 
@@ -232,15 +227,14 @@ Reveal attributes:
 - Script is in `Project Settings > Custom Code > Before </body>`.
 - SVG is inside an HTML Embed.
 - SVG `<path>` has `dv_path` or `dv-path`.
-- Page wrapper has class `msc-page`.
-- CSS has `.msc-path-layer` and `.msc-page`.
+- CSS has `.msc-path-layer`.
 - The path has a visible `stroke`.
 
 ## Troubleshooting
 
 - If nothing animates, confirm the script URL uses `msc-svg-path-animation`.
 - If the path is invisible, check `stroke`, `stroke-width`, and `z-index`.
-- If the path finishes too early, make sure `.msc-page` wraps all scroll sections.
+- If the path finishes too early, add class `msc-page` to the wrapper that contains all scroll sections.
 - If the path appears behind the page background, set your section backgrounds to transparent or raise the path layer `z-index`.
 - If Webstudio content loads after the script, run `window.dvPathRefresh()` from custom code.
 

@@ -122,12 +122,23 @@
     return document.querySelector(selector) || fallback || el;
   }
 
+  function getDefaultTrigger() {
+    return (
+      document.querySelector(".msc-page") ||
+      document.scrollingElement ||
+      document.documentElement ||
+      document.body
+    );
+  }
+
   function getPathOptions(path) {
     var tokens = parseTokens(readAttr(path, [PATH_ATTR, PATH_ATTR_ALT]));
     var triggerSelector =
       readAttr(path, ["dv-path-trigger", "dv_path_trigger"]) ||
-      tokens.trigger ||
-      ".msc-page";
+      tokens.trigger;
+    var trigger = triggerSelector
+      ? resolveTarget(path, triggerSelector, getDefaultTrigger())
+      : getDefaultTrigger();
 
     return {
       drawFrom: readNumber(
@@ -143,7 +154,7 @@
       scrub: readNumber(path, ["dv-path-scrub", "dv_path_scrub"], 1),
       start: readString(path, ["dv-path-start", "dv_path_start"], "top top"),
       end: readString(path, ["dv-path-end", "dv_path_end"], "bottom bottom"),
-      trigger: resolveTarget(path, triggerSelector, path.closest("svg") || path),
+      trigger: trigger,
       rotateGradient:
         readAttr(path, ["dv-path-gradient", "dv_path_gradient"]) ||
         tokens.gradient ||
