@@ -112,12 +112,14 @@ You can skip this step for the simple setup. If your page has a main wrapper tha
 msc-page
 ```
 
-The script will use `.msc-page` when it exists. If it does not exist, the script uses the full document scroll instead.
+With only `dv_path` and `dv_path_scrub`, the script uses the full document scroll from page top to page bottom.
 
 You only need a custom trigger when you want the path timing tied to one specific wrapper:
 
 ```html
 dv_path_trigger=".your-wrapper"
+dv_path_start="top top"
+dv_path_end="bottom bottom"
 ```
 
 ## Simple Attribute Setup
@@ -139,6 +141,12 @@ In Webstudio attributes, that means:
 | `dv_path` | `true` |
 | `dv_path_scrub` | `1.1` |
 
+For debugging, temporarily add:
+
+| Attribute | Value |
+|---|---|
+| `dv_path_debug` | `true` |
+
 ## Attribute Reference
 
 ### Main Path Attribute
@@ -153,9 +161,9 @@ In Webstudio attributes, that means:
 
 These are built-in defaults, so you usually do not need to add them:
 
-- Trigger: `.msc-page` if it exists, otherwise the full document scroll.
-- `dv-path-start="top top"`: starts when the trigger top reaches the viewport top.
-- `dv-path-end="bottom bottom"`: ends when the trigger bottom reaches the viewport bottom.
+- Trigger: full document scroll.
+- Start: page top.
+- End: page bottom.
 
 Advanced overrides are still supported:
 
@@ -233,6 +241,8 @@ Reveal attributes:
 ## Troubleshooting
 
 - If nothing animates, confirm the script URL uses `msc-svg-path-animation`.
+- If you recently changed the script, add a cache-buster to the CDN URL, for example `?v=latest`.
+- Add `dv_path_debug="true"` to the path and check the browser console for a `[dv-path] Initialized` message.
 - If the path is invisible, check `stroke`, `stroke-width`, and `z-index`.
 - If the path finishes too early, add class `msc-page` to the wrapper that contains all scroll sections.
 - If the path appears behind the page background, set your section backgrounds to transparent or raise the path layer `z-index`.

@@ -6,6 +6,7 @@
   var REVEAL_ATTR = "dv-reveal";
   var READY_FLAG = "dvPathReady";
   var REVEAL_READY_FLAG = "dvRevealReady";
+  var OBSERVER_READY_FLAG = "dvPathObserverReady";
   var GSAP_URL = "https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js";
   var SCROLL_TRIGGER_URL =
     "https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/ScrollTrigger.min.js";
@@ -136,9 +137,10 @@
     var triggerSelector =
       readAttr(path, ["dv-path-trigger", "dv_path_trigger"]) ||
       tokens.trigger;
-    var trigger = triggerSelector
+    var hasCustomTrigger = Boolean(triggerSelector);
+    var trigger = hasCustomTrigger
       ? resolveTarget(path, triggerSelector, getDefaultTrigger())
-      : getDefaultTrigger();
+      : null;
 
     return {
       drawFrom: readNumber(
@@ -152,8 +154,16 @@
         tokens.reverse ? 1 : 0
       ),
       scrub: readNumber(path, ["dv-path-scrub", "dv_path_scrub"], 1),
-      start: readString(path, ["dv-path-start", "dv_path_start"], "top top"),
-      end: readString(path, ["dv-path-end", "dv_path_end"], "bottom bottom"),
+      start: readString(
+        path,
+        ["dv-path-start", "dv_path_start"],
+        hasCustomTrigger ? "top top" : 0
+      ),
+      end: readString(
+        path,
+        ["dv-path-end", "dv_path_end"],
+        hasCustomTrigger ? "bottom bottom" : "max"
+      ),
       trigger: trigger,
       rotateGradient:
         readAttr(path, ["dv-path-gradient", "dv_path_gradient"]) ||
@@ -168,7 +178,8 @@
         path,
         ["dv-path-gradient-center", "dv_path_gradient_center"],
         ""
-      )
+      ),
+      debug: readAttr(path, ["dv-path-debug", "dv_path_debug"]) !== null
     };
   }
 
@@ -191,11 +202,22 @@
     options = getPathOptions(path);
     setPathProgress(path, length, options.drawFrom);
 
+    if (options.debug) {
+      console.info("[dv-path] Initialized", {
+        path: path,
+        length: length,
+        trigger: options.trigger || "document",
+        start: options.start,
+        end: options.end,
+        scrub: options.scrub
+      });
+    }
+
     window.gsap.to(path, {
       strokeDashoffset: length * options.drawTo,
       ease: "none",
       scrollTrigger: {
-        trigger: options.trigger,
+        trigger: options.trigger || undefined,
         start: options.start,
         end: options.end,
         scrub: options.scrub,
@@ -314,9 +336,44 @@
     initAll();
   };
 
+  function watchForLatePaths() {
+    if (
+      document.documentElement.dataset[OBSERVER_READY_FLAG] === "true" ||
+      !("MutationObserver" in window)
+    ) {
+      return;
+    }
+
+    document.documentElement.dataset[OBSERVER_READY_FLAG] = "true";
+
+    var schedule;
+    var observer = new MutationObserver(function () {
+      window.clearTimeout(schedule);
+      schedule = window.setTimeout(initAll, 80);
+    });
+
+    observer.observe(document.documentElement, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: [
+        PATH_ATTR,
+        PATH_ATTR_ALT,
+        "dv-path-scrub",
+        "dv_path_scrub",
+        "dv-path-trigger",
+        "dv_path_trigger"
+      ]
+    });
+  }
+
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initAll);
+    document.addEventListener("DOMContentLoaded", function () {
+      initAll();
+      watchForLatePaths();
+    });
   } else {
     initAll();
+    watchForLatePaths();
   }
 })();
