@@ -2,6 +2,7 @@
   "use strict";
 
   var PATH_ATTR = "dv-path";
+  var PATH_ATTR_ALT = "dv_path";
   var REVEAL_ATTR = "dv-reveal";
   var READY_FLAG = "dvPathReady";
   var REVEAL_READY_FLAG = "dvRevealReady";
@@ -84,14 +85,28 @@
     return tokens;
   }
 
-  function readNumber(el, attr, fallback) {
-    var raw = el.getAttribute(attr);
+  function readAttr(el, attrs) {
+    var names = Array.isArray(attrs) ? attrs : [attrs];
+    var raw;
+
+    for (var i = 0; i < names.length; i += 1) {
+      raw = el.getAttribute(names[i]);
+      if (raw !== null && raw !== "") {
+        return raw;
+      }
+    }
+
+    return null;
+  }
+
+  function readNumber(el, attrs, fallback) {
+    var raw = readAttr(el, attrs);
     var value = raw === null ? NaN : Number(raw);
     return Number.isFinite(value) ? value : fallback;
   }
 
-  function readString(el, attr, fallback) {
-    var raw = el.getAttribute(attr);
+  function readString(el, attrs, fallback) {
+    var raw = readAttr(el, attrs);
     return raw === null || raw === "" ? fallback : raw;
   }
 
@@ -108,24 +123,41 @@
   }
 
   function getPathOptions(path) {
-    var tokens = parseTokens(path.getAttribute(PATH_ATTR));
+    var tokens = parseTokens(readAttr(path, [PATH_ATTR, PATH_ATTR_ALT]));
     var triggerSelector =
-      path.getAttribute("dv-path-trigger") ||
+      readAttr(path, ["dv-path-trigger", "dv_path_trigger"]) ||
       tokens.trigger ||
-      path.closest("svg") ||
-      path;
+      ".msc-page";
 
     return {
-      drawFrom: readNumber(path, "dv-path-from", tokens.reverse ? 0 : 1),
-      drawTo: readNumber(path, "dv-path-to", tokens.reverse ? 1 : 0),
-      scrub: readNumber(path, "dv-path-scrub", 1),
-      start: readString(path, "dv-path-start", "top bottom"),
-      end: readString(path, "dv-path-end", "bottom top"),
+      drawFrom: readNumber(
+        path,
+        ["dv-path-from", "dv_path_from"],
+        tokens.reverse ? 0 : 1
+      ),
+      drawTo: readNumber(
+        path,
+        ["dv-path-to", "dv_path_to"],
+        tokens.reverse ? 1 : 0
+      ),
+      scrub: readNumber(path, ["dv-path-scrub", "dv_path_scrub"], 1),
+      start: readString(path, ["dv-path-start", "dv_path_start"], "top top"),
+      end: readString(path, ["dv-path-end", "dv_path_end"], "bottom bottom"),
       trigger: resolveTarget(path, triggerSelector, path.closest("svg") || path),
       rotateGradient:
-        path.getAttribute("dv-path-gradient") || tokens.gradient || "",
-      rotateDuration: readNumber(path, "dv-path-gradient-duration", 5),
-      rotateCenter: readString(path, "dv-path-gradient-center", "")
+        readAttr(path, ["dv-path-gradient", "dv_path_gradient"]) ||
+        tokens.gradient ||
+        "",
+      rotateDuration: readNumber(
+        path,
+        ["dv-path-gradient-duration", "dv_path_gradient_duration"],
+        5
+      ),
+      rotateCenter: readString(
+        path,
+        ["dv-path-gradient-center", "dv_path_gradient_center"],
+        ""
+      )
     };
   }
 
@@ -234,7 +266,7 @@
 
   function initAll() {
     var paths = Array.prototype.slice.call(
-      document.querySelectorAll("[" + PATH_ATTR + "]")
+      document.querySelectorAll("[" + PATH_ATTR + "],[" + PATH_ATTR_ALT + "]")
     );
     var reveals = Array.prototype.slice.call(
       document.querySelectorAll("[" + REVEAL_ATTR + "]")

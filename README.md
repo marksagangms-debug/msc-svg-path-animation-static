@@ -4,7 +4,7 @@ This works like the MnB text background animation setup:
 
 1. Add one CDN script in Webstudio custom code.
 2. Add an HTML Embed for the SVG.
-3. Add custom attributes to control the animation.
+3. Add `dv_path` to the SVG path.
 4. Add a small CSS block for positioning.
 
 The script auto-loads GSAP and ScrollTrigger. You do not need to add separate GSAP scripts.
@@ -52,13 +52,10 @@ Add a Webstudio HTML Embed near the top of the page. Paste this:
     </defs>
 
     <path
-      dv-path
-      dv-path-trigger=".msc-page"
-      dv-path-start="top top"
-      dv-path-end="bottom bottom"
-      dv-path-scrub="1.1"
-      dv-path-gradient="#msc-scroll-gradient"
-      dv-path-gradient-center="720 500"
+      dv_path
+      dv_path_scrub="1.1"
+      dv_path_gradient="#msc-scroll-gradient"
+      dv_path_gradient_center="720 500"
       fill="none"
       stroke="url(#msc-scroll-gradient)"
       stroke-width="12"
@@ -73,7 +70,13 @@ Add a Webstudio HTML Embed near the top of the page. Paste this:
 The important part is this attribute on the SVG path:
 
 ```html
-dv-path
+dv_path
+```
+
+If you want to control the smoothness, also add:
+
+```html
+dv_path_scrub="1.1"
 ```
 
 That is the equivalent of the MnB typewriter attribute:
@@ -114,13 +117,13 @@ Select the main wrapper that contains your page sections and add this class:
 msc-page
 ```
 
-The SVG path uses this attribute:
+By default, the SVG path uses this trigger:
 
 ```html
 dv-path-trigger=".msc-page"
 ```
 
-So the path animation starts and ends based on the scroll length of the `.msc-page` wrapper.
+So you do not need to add `dv-path-trigger` manually. Just make sure the main wrapper has class `msc-page`.
 
 ## Simple Attribute Setup
 
@@ -128,55 +131,70 @@ Use this as the default:
 
 ```html
 <path
-  dv-path
-  dv-path-trigger=".msc-page"
-  dv-path-start="top top"
-  dv-path-end="bottom bottom"
-  dv-path-scrub="1.1"
+  dv_path
+  dv_path_scrub="1.1"
   ...
 ></path>
 ```
+
+In Webstudio attributes, that means:
+
+| Attribute | Value |
+|---|---|
+| `dv_path` | `true` |
+| `dv_path_scrub` | `1.1` |
 
 ## Attribute Reference
 
 ### Main Path Attribute
 
-- `dv-path`: turns the SVG path into a scroll-drawn path.
+- `dv_path`: turns the SVG path into a scroll-drawn path.
+- `dv-path`: dashed alias for `dv_path`.
 
 ### Scroll Timing
+
+- `dv_path_scrub="1.1"`: smooths the scroll animation.
+- `dv-path-scrub="1.1"`: dashed alias for `dv_path_scrub`.
+
+These are built-in defaults, so you usually do not need to add them:
 
 - `dv-path-trigger=".msc-page"`: the Webstudio element that controls the scroll range.
 - `dv-path-start="top top"`: starts when the trigger top reaches the viewport top.
 - `dv-path-end="bottom bottom"`: ends when the trigger bottom reaches the viewport bottom.
-- `dv-path-scrub="1.1"`: smooths the scroll animation.
+
+Advanced overrides are still supported:
+
+- `dv_path_trigger=".custom-wrapper"`
+- `dv_path_start="top center"`
+- `dv_path_end="bottom top"`
 
 ### Draw Direction
 
 Default direction:
 
 ```html
-dv-path-from="1"
-dv-path-to="0"
+dv_path_from="1"
+dv_path_to="0"
 ```
 
 Reverse direction:
 
 ```html
-dv-path-from="0"
-dv-path-to="1"
+dv_path_from="0"
+dv_path_to="1"
 ```
 
 ### Gradient Rotation
 
 ```html
-dv-path-gradient="#msc-scroll-gradient"
-dv-path-gradient-center="720 500"
-dv-path-gradient-duration="5"
+dv_path_gradient="#msc-scroll-gradient"
+dv_path_gradient_center="720 500"
+dv_path_gradient_duration="5"
 ```
 
-- `dv-path-gradient`: CSS selector for the gradient to rotate.
-- `dv-path-gradient-center`: SVG rotation center.
-- `dv-path-gradient-duration`: seconds for one full rotation.
+- `dv_path_gradient`: CSS selector for the gradient to rotate.
+- `dv_path_gradient_center`: SVG rotation center.
+- `dv_path_gradient_duration`: seconds for one full rotation.
 
 ## Optional Reveal Animation
 
@@ -213,9 +231,8 @@ Reveal attributes:
 
 - Script is in `Project Settings > Custom Code > Before </body>`.
 - SVG is inside an HTML Embed.
-- SVG `<path>` has `dv-path`.
+- SVG `<path>` has `dv_path` or `dv-path`.
 - Page wrapper has class `msc-page`.
-- `dv-path-trigger` matches that class: `.msc-page`.
 - CSS has `.msc-path-layer` and `.msc-page`.
 - The path has a visible `stroke`.
 
