@@ -132,8 +132,31 @@
     );
   }
 
+  function normalizePathMode(rawMode) {
+    var mode = (rawMode || "").toLowerCase();
+
+    if (mode === "loop" || mode === "infinite") {
+      return "autoplay";
+    }
+
+    return mode === "autoplay" ? mode : "scroll";
+  }
+
+  function normalizePathRepeat(rawRepeat) {
+    var repeat = (rawRepeat || "").toLowerCase();
+
+    if (repeat === "infinite" || repeat === "loop") {
+      return -1;
+    }
+
+    return 0;
+  }
+
   function getPathOptions(path) {
     var tokens = parseTokens(readAttr(path, [PATH_ATTR, PATH_ATTR_ALT]));
+    var mode = normalizePathMode(
+      readAttr(path, ["dv-path-mode", "dv_path_mode"]) || tokens.mode
+    );
     var triggerSelector =
       readAttr(path, ["dv-path-trigger", "dv_path_trigger"]) ||
       tokens.trigger;
@@ -152,6 +175,11 @@
         path,
         ["dv-path-to", "dv_path_to"],
         tokens.reverse ? 1 : 0
+      ),
+      mode: mode,
+      duration: readNumber(path, ["dv-path-duration", "dv_path_duration"], 2),
+      repeat: normalizePathRepeat(
+        readAttr(path, ["dv-path-repeat", "dv_path_repeat"]) || tokens.repeat
       ),
       scrub: readNumber(path, ["dv-path-scrub", "dv_path_scrub"], 1),
       start: readString(
@@ -206,24 +234,36 @@
       console.info("[dv-path] Initialized", {
         path: path,
         length: length,
+        mode: options.mode,
         trigger: options.trigger || "document",
         start: options.start,
         end: options.end,
-        scrub: options.scrub
+        scrub: options.scrub,
+        duration: options.duration,
+        repeat: options.repeat
       });
     }
 
-    window.gsap.to(path, {
-      strokeDashoffset: length * options.drawTo,
-      ease: "none",
-      scrollTrigger: {
-        trigger: options.trigger || undefined,
-        start: options.start,
-        end: options.end,
-        scrub: options.scrub,
-        invalidateOnRefresh: true
-      }
-    });
+    if (options.mode === "autoplay") {
+      window.gsap.to(path, {
+        strokeDashoffset: length * options.drawTo,
+        duration: options.duration,
+        ease: "none",
+        repeat: options.repeat
+      });
+    } else {
+      window.gsap.to(path, {
+        strokeDashoffset: length * options.drawTo,
+        ease: "none",
+        scrollTrigger: {
+          trigger: options.trigger || undefined,
+          start: options.start,
+          end: options.end,
+          scrub: options.scrub,
+          invalidateOnRefresh: true
+        }
+      });
+    }
 
     if (options.rotateGradient) {
       gradient = document.querySelector(options.rotateGradient);
@@ -359,6 +399,12 @@
       attributeFilter: [
         PATH_ATTR,
         PATH_ATTR_ALT,
+        "dv-path-mode",
+        "dv_path_mode",
+        "dv-path-repeat",
+        "dv_path_repeat",
+        "dv-path-duration",
+        "dv_path_duration",
         "dv-path-scrub",
         "dv_path_scrub",
         "dv-path-trigger",
