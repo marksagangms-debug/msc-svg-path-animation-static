@@ -4,10 +4,10 @@ This works like the MnB text background animation setup:
 
 1. Add one CDN script in Webstudio custom code.
 2. Add an HTML Embed for the SVG.
-3. Add `dv-path` to the SVG path, then choose `dv-path-mode="scroll"` or `dv-path-mode="autoplay"`.
+3. Add `dv_path`, `dv_path_trigger`, and `dv_path_scrub` to the SVG path.
 4. Add a small CSS block for positioning.
 
-The script auto-loads GSAP, and only loads ScrollTrigger when the page actually has scroll paths or `dv-reveal`.
+The script auto-loads GSAP and ScrollTrigger. You do not need to add separate GSAP scripts.
 
 ## 1) Add the Script in Webstudio
 
@@ -52,11 +52,11 @@ Add a Webstudio HTML Embed near the top of the page. Paste this:
     </defs>
 
     <path
-      dv-path
-      dv-path-trigger=".msc-page"
-      dv-path-scrub="1.1"
-      dv-path-gradient="#msc-scroll-gradient"
-      dv-path-gradient-center="720 500"
+      dv_path
+      dv_path_trigger=".msc-page"
+      dv_path_scrub="1.1"
+      dv_path_gradient="#msc-scroll-gradient"
+      dv_path_gradient_center="720 500"
       fill="none"
       stroke="url(#msc-scroll-gradient)"
       stroke-width="12"
@@ -71,14 +71,14 @@ Add a Webstudio HTML Embed near the top of the page. Paste this:
 The important part is this attribute on the SVG path:
 
 ```html
-dv-path
+dv_path
 ```
 
 Then add the scroll trigger and scrub attributes:
 
 ```html
-dv-path-trigger=".msc-page"
-dv-path-scrub="1.1"
+dv_path_trigger=".msc-page"
+dv_path_scrub="1.1"
 ```
 
 That is the equivalent of the MnB typewriter attribute:
@@ -117,18 +117,18 @@ msc-page
 This class must match the path trigger:
 
 ```html
-dv-path-trigger=".msc-page"
+dv_path_trigger=".msc-page"
 ```
 
 ## Simple Attribute Setup
 
-Use this as the default scroll setup:
+Use this as the default:
 
 ```html
 <path
-  dv-path
-  dv-path-trigger=".msc-page"
-  dv-path-scrub="1.1"
+  dv_path
+  dv_path_trigger=".msc-page"
+  dv_path_scrub="1.1"
   ...
 ></path>
 ```
@@ -137,147 +137,68 @@ In Webstudio attributes, that means:
 
 | Attribute | Value |
 |---|---|
-| `dv-path` | `true` |
-| `dv-path-trigger` | `.msc-page` |
-| `dv-path-scrub` | `1.1` |
+| `dv_path` | `true` |
+| `dv_path_trigger` | `.msc-page` |
+| `dv_path_scrub` | `1.1` |
 
 For debugging, temporarily add:
 
 | Attribute | Value |
 |---|---|
-| `dv-path-debug` | `true` |
+| `dv_path_debug` | `true` |
 
 ## Attribute Reference
 
 ### Main Path Attribute
 
-- `dv-path`: enables path animation.
-- `dv_path`: underscore alias for backward compatibility.
-
-### Supported Path Modes
-
-Use one of these values:
-
-```html
-dv-path-mode="scroll"
-dv-path-mode="autoplay"
-```
-
-- `dv-path-mode="scroll"`: connects the path to ScrollTrigger.
-- `dv-path-mode="autoplay"`: draws the full path automatically and never attaches a ScrollTrigger.
-- If `dv-path-mode` is omitted, the path defaults to `scroll`.
+- `dv_path`: turns the SVG path into a scroll-drawn path.
+- `dv-path`: dashed alias for `dv_path`.
 
 ### Scroll Timing
 
-- `dv-path-scrub="1.1"`: smooths the scroll animation.
-- `dv-path-trigger=".msc-page"`: the wrapper that controls the scroll range.
-- `dv_path_scrub` and `dv_path_trigger`: underscore aliases kept for backward compatibility.
-- These attributes only apply when `dv-path-mode="scroll"`.
+- `dv_path_scrub="1.1"`: smooths the scroll animation.
+- `dv-path-scrub="1.1"`: dashed alias for `dv_path_scrub`.
+- `dv_path_trigger=".msc-page"`: the wrapper that controls the scroll range.
+- `dv-path-trigger=".msc-page"`: dashed alias for `dv_path_trigger`.
 
 These are built-in defaults, so you usually do not need to add them:
 
-- `dv-path-start="top top"`: starts when the trigger top reaches the viewport top.
-- `dv-path-end="bottom bottom"`: ends when the trigger bottom reaches the viewport bottom.
+- `dv_path_start="top top"`: starts when the trigger top reaches the viewport top.
+- `dv_path_end="bottom bottom"`: ends when the trigger bottom reaches the viewport bottom.
 
 Advanced overrides are still supported:
 
-- `dv-path-trigger=".custom-wrapper"`
-- `dv-path-start="top center"`
-- `dv-path-end="bottom top"`
-
-### Full Autoplay Mode
-
-If you want the whole path to animate without scrolling, switch the mode to autoplay:
-
-```html
-<path
-  dv-path
-  dv-path-mode="autoplay"
-  dv-path-duration="2.4"
-  dv-path-repeat="once"
-></path>
-```
-
-For an infinite loop:
-
-```html
-<path
-  dv-path
-  dv-path-mode="autoplay"
-  dv-path-duration="2.4"
-  dv-path-repeat="infinite"
-></path>
-```
-
-- `dv-path-mode="autoplay"`: ignores scroll and plays the full draw animation automatically.
-- `dv-path-duration="2.4"`: seconds for one full path draw.
-- `dv-path-repeat="once"`: plays a single iteration.
-- `dv-path-repeat="infinite"`: loops forever.
-- `dv-path-trigger`, `dv-path-start`, `dv-path-end`, and `dv-path-scrub` are ignored in autoplay mode.
-- `dv_path_mode`, `dv_path_duration`, and `dv_path_repeat` remain supported as underscore aliases.
-
-### Mixed-Mode Example
-
-You can run autoplay and scroll paths on the same page:
-
-```html
-<path
-  dv-path
-  dv-path-mode="autoplay"
-  dv-path-duration="5"
-  dv-path-repeat="once"
-></path>
-
-<path
-  dv-path
-  dv-path-mode="scroll"
-  dv-path-trigger=".msc-page"
-  dv-path-scrub="1.1"
-></path>
-```
-
-This is also safe on pages that use `dv-reveal`.
+- `dv_path_trigger=".custom-wrapper"`
+- `dv_path_start="top center"`
+- `dv_path_end="bottom top"`
 
 ### Draw Direction
 
 Default direction:
 
 ```html
-dv-path-from="1"
-dv-path-to="0"
+dv_path_from="1"
+dv_path_to="0"
 ```
 
 Reverse direction:
 
 ```html
-dv-path-from="0"
-dv-path-to="1"
+dv_path_from="0"
+dv_path_to="1"
 ```
 
 ### Gradient Rotation
 
 ```html
-dv-path-gradient="#msc-scroll-gradient"
-dv-path-gradient-center="720 500"
-dv-path-gradient-duration="5"
+dv_path_gradient="#msc-scroll-gradient"
+dv_path_gradient_center="720 500"
+dv_path_gradient_duration="5"
 ```
 
-- `dv-path-gradient`: CSS selector for the gradient to rotate.
-- `dv-path-gradient-center`: SVG rotation center.
-- `dv-path-gradient-duration`: seconds for one full rotation.
-
-### Debug Diagnostics
-
-When `dv-path-debug="true"` is present, the runtime logs the resolved mode and controller state in the console.
-
-The runtime also writes these DOM markers to each initialized path:
-
-- `data-dv-path-runtime`
-- `data-dv-path-mode-resolved`
-- `data-dv-path-init-count`
-- `data-dv-path-controller`
-
-Use those markers in Webstudio to confirm that an autoplay path resolved to `autoplay` and did not get a scroll controller.
+- `dv_path_gradient`: CSS selector for the gradient to rotate.
+- `dv_path_gradient_center`: SVG rotation center.
+- `dv_path_gradient_duration`: seconds for one full rotation.
 
 ## Optional Reveal Animation
 
@@ -314,8 +235,8 @@ Reveal attributes:
 
 - Script is in `Project Settings > Custom Code > Before </body>`.
 - SVG is inside an HTML Embed.
-- SVG `<path>` has `dv-path`.
-- Scroll-mode SVG `<path>` has `dv-path-trigger=".msc-page"`.
+- SVG `<path>` has `dv_path` or `dv-path`.
+- SVG `<path>` has `dv_path_trigger=".msc-page"`.
 - Your scroll wrapper has class `msc-page`.
 - CSS has `.msc-path-layer`.
 - The path has a visible `stroke`.
@@ -324,8 +245,7 @@ Reveal attributes:
 
 - If nothing animates, confirm the script URL uses `msc-svg-path-animation`.
 - If you recently changed the script, add a cache-buster to the CDN URL, for example `?v=latest`.
-- Add `dv-path-debug="true"` to the path and check the browser console for a `[dv-path] Initialized` message.
-- Inspect `data-dv-path-mode-resolved` and `data-dv-path-controller` on the published SVG path if Webstudio still behaves unexpectedly.
+- Add `dv_path_debug="true"` to the path and check the browser console for a `[dv-path] Initialized` message.
 - If the path is invisible, check `stroke`, `stroke-width`, and `z-index`.
 - If the path finishes too early, add class `msc-page` to the wrapper that contains all scroll sections.
 - If the path appears behind the page background, set your section backgrounds to transparent or raise the path layer `z-index`.
