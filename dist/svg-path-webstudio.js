@@ -316,15 +316,15 @@
       var forward = options.drawFrom >= options.drawTo;
       var startOffset = length * options.offset;
 
-      path.style.strokeDasharray = tailLength + " " + (length + tailLength);
+      path.style.strokeDasharray = tailLength + " " + length;
       path.style.strokeDashoffset = forward
-        ? length + tailLength - startOffset
+        ? tailLength - startOffset
         : -length + startOffset;
 
       window.gsap.to(path, {
         strokeDashoffset: forward
           ? -length - startOffset
-          : length + tailLength + startOffset,
+          : tailLength + startOffset,
         duration: options.duration,
         ease: "none",
         repeat: options.repeat
