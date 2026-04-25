@@ -1,12 +1,22 @@
 (function () {
   "use strict";
 
-  var PATH_ATTR = "dv-path";
-  var PATH_ATTR_ALT = "dv_path";
-  var REVEAL_ATTR = "dv-reveal";
-  var READY_FLAG = "dvPathReady";
-  var REVEAL_READY_FLAG = "dvRevealReady";
-  var OBSERVER_READY_FLAG = "dvPathObserverReady";
+  var PATH_ATTR = "ms-path";
+  var PATH_ATTR_ALT = "ms_path";
+  var PATH_ATTR_LEGACY = "dv-path";
+  var PATH_ATTR_LEGACY_ALT = "dv_path";
+  var PATH_ATTRS = [
+    PATH_ATTR,
+    PATH_ATTR_ALT,
+    PATH_ATTR_LEGACY,
+    PATH_ATTR_LEGACY_ALT
+  ];
+  var REVEAL_ATTR = "ms-reveal";
+  var REVEAL_ATTR_LEGACY = "dv-reveal";
+  var REVEAL_ATTRS = [REVEAL_ATTR, REVEAL_ATTR_LEGACY];
+  var READY_FLAG = "msPathReady";
+  var REVEAL_READY_FLAG = "msRevealReady";
+  var OBSERVER_READY_FLAG = "msPathObserverReady";
   var GSAP_URL = "https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js";
   var SCROLL_TRIGGER_URL =
     "https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/ScrollTrigger.min.js";
@@ -115,6 +125,20 @@
     return raw === null || raw === "" ? fallback : raw;
   }
 
+  function pathAttr(name) {
+    var snakeName = name.replace(/-/g, "_");
+    return [
+      "ms-path-" + name,
+      "ms_path_" + snakeName,
+      "dv-path-" + name,
+      "dv_path_" + snakeName
+    ];
+  }
+
+  function revealAttr(name) {
+    return ["ms-reveal-" + name, "dv-reveal-" + name];
+  }
+
   function normalizeMode(value) {
     return value === "static" ? "static" : "scroll";
   }
@@ -145,9 +169,9 @@
   }
 
   function getPathOptions(path) {
-    var tokens = parseTokens(readAttr(path, [PATH_ATTR, PATH_ATTR_ALT]));
+    var tokens = parseTokens(readAttr(path, PATH_ATTRS));
     var triggerSelector =
-      readAttr(path, ["dv-path-trigger", "dv_path_trigger"]) ||
+      readAttr(path, pathAttr("trigger")) ||
       tokens.trigger;
     var hasCustomTrigger = Boolean(triggerSelector);
     var trigger = hasCustomTrigger
@@ -156,57 +180,57 @@
 
     return {
       mode: normalizeMode(
-        readAttr(path, ["dv-path-mode", "dv_path_mode"]) ||
+        readAttr(path, pathAttr("mode")) ||
           tokens.mode ||
           (tokens.static ? "static" : "scroll")
       ),
       drawFrom: readNumber(
         path,
-        ["dv-path-from", "dv_path_from"],
+        pathAttr("from"),
         tokens.reverse ? 0 : 1
       ),
       drawTo: readNumber(
         path,
-        ["dv-path-to", "dv_path_to"],
+        pathAttr("to"),
         tokens.reverse ? 1 : 0
       ),
-      scrub: readNumber(path, ["dv-path-scrub", "dv_path_scrub"], 1),
+      scrub: readNumber(path, pathAttr("scrub"), 1),
       start: readString(
         path,
-        ["dv-path-start", "dv_path_start"],
+        pathAttr("start"),
         hasCustomTrigger ? "top top" : 0
       ),
       end: readString(
         path,
-        ["dv-path-end", "dv_path_end"],
+        pathAttr("end"),
         hasCustomTrigger ? "bottom bottom" : "max"
       ),
       duration: readNumber(
         path,
-        ["dv-path-duration", "dv_path_duration"],
+        pathAttr("duration"),
         tokens.duration ? Number(tokens.duration) : 2
       ),
       repeat: normalizeRepeat(
-        readAttr(path, ["dv-path-repeat", "dv_path_repeat"]) ||
+        readAttr(path, pathAttr("repeat")) ||
           tokens.repeat ||
           (tokens.infinite ? "infinite" : "once")
       ),
       trigger: trigger,
       rotateGradient:
-        readAttr(path, ["dv-path-gradient", "dv_path_gradient"]) ||
+        readAttr(path, pathAttr("gradient")) ||
         tokens.gradient ||
         "",
       rotateDuration: readNumber(
         path,
-        ["dv-path-gradient-duration", "dv_path_gradient_duration"],
+        pathAttr("gradient-duration"),
         5
       ),
       rotateCenter: readString(
         path,
-        ["dv-path-gradient-center", "dv_path_gradient_center"],
+        pathAttr("gradient-center"),
         ""
       ),
-      debug: readAttr(path, ["dv-path-debug", "dv_path_debug"]) !== null
+      debug: readAttr(path, pathAttr("debug")) !== null
     };
   }
 
@@ -230,7 +254,7 @@
     setPathProgress(path, length, options.drawFrom);
 
     if (options.debug) {
-      console.info("[dv-path] Initialized", {
+      console.info("[ms-path] Initialized", {
         path: path,
         length: length,
         mode: options.mode,
@@ -282,15 +306,15 @@
   }
 
   function getRevealOptions(el) {
-    var tokens = parseTokens(el.getAttribute(REVEAL_ATTR));
+    var tokens = parseTokens(readAttr(el, REVEAL_ATTRS));
 
     return {
-      y: readNumber(el, "dv-reveal-y", tokens.y ? Number(tokens.y) : 40),
-      duration: readNumber(el, "dv-reveal-duration", 0.9),
-      delay: readNumber(el, "dv-reveal-delay", 0),
-      start: readString(el, "dv-reveal-start", "top 88%"),
-      once: el.getAttribute("dv-reveal-once") !== "false",
-      stagger: readNumber(el, "dv-reveal-stagger", 0)
+      y: readNumber(el, revealAttr("y"), tokens.y ? Number(tokens.y) : 40),
+      duration: readNumber(el, revealAttr("duration"), 0.9),
+      delay: readNumber(el, revealAttr("delay"), 0),
+      start: readString(el, revealAttr("start"), "top 88%"),
+      once: readString(el, revealAttr("once"), "true") !== "false",
+      stagger: readNumber(el, revealAttr("stagger"), 0)
     };
   }
 
@@ -338,10 +362,18 @@
 
   function initAll() {
     var paths = Array.prototype.slice.call(
-      document.querySelectorAll("[" + PATH_ATTR + "],[" + PATH_ATTR_ALT + "]")
+      document.querySelectorAll(
+        PATH_ATTRS.map(function (attr) {
+          return "[" + attr + "]";
+        }).join(",")
+      )
     );
     var reveals = Array.prototype.slice.call(
-      document.querySelectorAll("[" + REVEAL_ATTR + "]")
+      document.querySelectorAll(
+        REVEAL_ATTRS.map(function (attr) {
+          return "[" + attr + "]";
+        }).join(",")
+      )
     );
     var prefersReducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
@@ -375,16 +407,18 @@
         }
       })
       .catch(function (error) {
-        console.error("[dv-path] Initialization failed:", error);
+        console.error("[ms-path] Initialization failed:", error);
       });
   }
 
-  window.dvPathRefresh = function () {
+  window.msPathRefresh = function () {
     if (window.ScrollTrigger) {
       window.ScrollTrigger.refresh();
     }
     initAll();
   };
+
+  window.dvPathRefresh = window.msPathRefresh;
 
   function watchForLatePaths() {
     if (
@@ -409,14 +443,26 @@
       attributeFilter: [
         PATH_ATTR,
         PATH_ATTR_ALT,
+        PATH_ATTR_LEGACY,
+        PATH_ATTR_LEGACY_ALT,
+        "ms-path-scrub",
+        "ms_path_scrub",
         "dv-path-scrub",
         "dv_path_scrub",
+        "ms-path-trigger",
+        "ms_path_trigger",
         "dv-path-trigger",
         "dv_path_trigger",
+        "ms-path-mode",
+        "ms_path_mode",
         "dv-path-mode",
         "dv_path_mode",
+        "ms-path-duration",
+        "ms_path_duration",
         "dv-path-duration",
         "dv_path_duration",
+        "ms-path-repeat",
+        "ms_path_repeat",
         "dv-path-repeat",
         "dv_path_repeat"
       ]
