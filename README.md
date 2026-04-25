@@ -4,7 +4,7 @@ This works like the MnB text background animation setup:
 
 1. Add one CDN script in Webstudio custom code.
 2. Add an HTML Embed for the SVG.
-3. Add `ms_path`, `ms_path_mode`, `ms_path_repeat`, `ms_path_duration`, and `ms_path_tail` to the SVG path.
+3. Add `ms_path`, `ms_path_mode`, `ms_path_repeat`, `ms_path_duration`, `ms_path_tail`, and `ms_path_offset` to the SVG path.
 4. Add a small CSS block for positioning.
 
 The script auto-loads GSAP, and it only loads ScrollTrigger when scroll-based path or reveal animations need it. You do not need to add separate GSAP scripts.
@@ -57,6 +57,7 @@ Add a Webstudio HTML Embed near the top of the page. Paste this:
       ms_path_repeat="infinite"
       ms_path_duration="2.8"
       ms_path_tail="0.32"
+      ms_path_offset="0%"
       ms_path_gradient="#msc-scroll-gradient"
       ms_path_gradient_center="720 500"
       fill="none"
@@ -83,6 +84,7 @@ ms_path_mode="static"
 ms_path_repeat="infinite"
 ms_path_duration="2.8"
 ms_path_tail="0.32"
+ms_path_offset="0%"
 ```
 
 That is the equivalent of the MnB typewriter attribute:
@@ -135,6 +137,7 @@ Use this as the default:
   ms_path_repeat="once"
   ms_path_duration="2.8"
   ms_path_tail="0.32"
+  ms_path_offset="25%"
   ...
 ></path>
 ```
@@ -148,6 +151,7 @@ In Webstudio attributes, that means:
 | `ms_path_repeat` | `once` or `infinite` |
 | `ms_path_duration` | `2.8` |
 | `ms_path_tail` | `0.32` |
+| `ms_path_offset` | `0%`, `25%`, or `0.25` |
 
 For debugging, temporarily add:
 
@@ -172,7 +176,8 @@ Legacy `dv_path` and `dv-path` attributes still work, but new embeds should use 
 - `ms_path_repeat="infinite"`: loops the path draw forever.
 - `ms_path_duration="2.8"`: seconds for one path draw.
 - `ms_path_tail="0.32"`: visible tail length as a fraction of the full path. The head moves first and the tail follows behind it.
-- `ms-path-repeat`, `ms-path-duration`, and `ms-path-tail`: dashed aliases.
+- `ms_path_offset="25%"`: where the static animation starts along the path. You can use percentages like `25%` or fractions like `0.25`.
+- `ms-path-repeat`, `ms-path-duration`, `ms-path-tail`, and `ms-path-offset`: dashed aliases.
 
 ### Scroll Timing
 
@@ -262,6 +267,7 @@ Reveal attributes:
 - Static SVG `<path>` has `ms_path_repeat="once"` or `ms_path_repeat="infinite"`.
 - Static SVG `<path>` has `ms_path_duration`, for example `2.8`.
 - Static SVG `<path>` can set `ms_path_tail`, for example `0.32`.
+- Static SVG `<path>` can set `ms_path_offset`, for example `25%`.
 - CSS has `.msc-path-layer`.
 - The path has a visible `stroke`.
 

@@ -125,6 +125,26 @@
     return raw === null || raw === "" ? fallback : raw;
   }
 
+  function parseProgress(raw, fallback) {
+    var value;
+
+    if (raw === null || raw === "") {
+      return fallback;
+    }
+
+    if (/%$/.test(raw)) {
+      value = Number(raw.slice(0, -1)) / 100;
+    } else {
+      value = Number(raw);
+    }
+
+    return Number.isFinite(value) ? value : fallback;
+  }
+
+  function readProgress(el, attrs, fallback) {
+    return parseProgress(readAttr(el, attrs), fallback);
+  }
+
   function pathAttr(name) {
     var snakeName = name.replace(/-/g, "_");
     return [
@@ -228,6 +248,15 @@
         0.01,
         1
       ),
+      offset: clamp(
+        readProgress(
+          path,
+          pathAttr("offset"),
+          tokens.offset ? parseProgress(tokens.offset, 0) : 0
+        ),
+        0,
+        1
+      ),
       trigger: trigger,
       rotateGradient:
         readAttr(path, pathAttr("gradient")) ||
@@ -277,19 +306,25 @@
         scrub: options.scrub,
         duration: options.duration,
         repeat: options.repeat,
-        tail: options.tail
+        tail: options.tail,
+        offset: options.offset
       });
     }
 
     if (options.mode === "static") {
       var tailLength = length * options.tail;
       var forward = options.drawFrom >= options.drawTo;
+      var startOffset = length * options.offset;
 
       path.style.strokeDasharray = tailLength + " " + (length + tailLength);
-      path.style.strokeDashoffset = forward ? length + tailLength : -length;
+      path.style.strokeDashoffset = forward
+        ? length + tailLength - startOffset
+        : -length + startOffset;
 
       window.gsap.to(path, {
-        strokeDashoffset: forward ? -length : length + tailLength,
+        strokeDashoffset: forward
+          ? -length - startOffset
+          : length + tailLength + startOffset,
         duration: options.duration,
         ease: "none",
         repeat: options.repeat
@@ -488,7 +523,11 @@
         "ms-path-tail",
         "ms_path_tail",
         "dv-path-tail",
-        "dv_path_tail"
+        "dv_path_tail",
+        "ms-path-offset",
+        "ms_path_offset",
+        "dv-path-offset",
+        "dv_path_offset"
       ]
     });
   }
