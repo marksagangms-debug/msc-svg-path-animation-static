@@ -147,6 +147,10 @@
     return value === "infinite" || value === "loop" ? -1 : 0;
   }
 
+  function clamp(value, min, max) {
+    return Math.min(Math.max(value, min), max);
+  }
+
   function resolveTarget(el, selector, fallback) {
     if (!selector || selector === "self") {
       return fallback || el;
@@ -215,6 +219,15 @@
           tokens.repeat ||
           (tokens.infinite ? "infinite" : "once")
       ),
+      tail: clamp(
+        readNumber(
+          path,
+          pathAttr("tail"),
+          tokens.tail ? Number(tokens.tail) : 0.32
+        ),
+        0.01,
+        1
+      ),
       trigger: trigger,
       rotateGradient:
         readAttr(path, pathAttr("gradient")) ||
@@ -263,13 +276,20 @@
         end: options.end,
         scrub: options.scrub,
         duration: options.duration,
-        repeat: options.repeat
+        repeat: options.repeat,
+        tail: options.tail
       });
     }
 
     if (options.mode === "static") {
+      var tailLength = length * options.tail;
+      var forward = options.drawFrom >= options.drawTo;
+
+      path.style.strokeDasharray = tailLength + " " + (length + tailLength);
+      path.style.strokeDashoffset = forward ? length + tailLength : -length;
+
       window.gsap.to(path, {
-        strokeDashoffset: length * options.drawTo,
+        strokeDashoffset: forward ? -length : length + tailLength,
         duration: options.duration,
         ease: "none",
         repeat: options.repeat
@@ -464,7 +484,11 @@
         "ms-path-repeat",
         "ms_path_repeat",
         "dv-path-repeat",
-        "dv_path_repeat"
+        "dv_path_repeat",
+        "ms-path-tail",
+        "ms_path_tail",
+        "dv-path-tail",
+        "dv_path_tail"
       ]
     });
   }
