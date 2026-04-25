@@ -40,7 +40,7 @@
     });
   }
 
-  function ensureGsap() {
+  function ensureGsap(needsScrollTrigger) {
     var gsapReady = window.gsap
       ? Promise.resolve()
       : loadScript(GSAP_URL).then(function () {
@@ -50,6 +50,10 @@
         });
 
     return gsapReady.then(function () {
+      if (!needsScrollTrigger) {
+        return;
+      }
+
       if (window.ScrollTrigger) {
         return;
       }
@@ -111,6 +115,14 @@
     return raw === null || raw === "" ? fallback : raw;
   }
 
+  function normalizeMode(value) {
+    return value === "static" ? "static" : "scroll";
+  }
+
+  function normalizeRepeat(value) {
+    return value === "infinite" || value === "loop" ? -1 : 0;
+  }
+
   function resolveTarget(el, selector, fallback) {
     if (!selector || selector === "self") {
       return fallback || el;
@@ -143,6 +155,11 @@
       : null;
 
     return {
+      mode: normalizeMode(
+        readAttr(path, ["dv-path-mode", "dv_path_mode"]) ||
+          tokens.mode ||
+          (tokens.static ? "static" : "scroll")
+      ),
       drawFrom: readNumber(
         path,
         ["dv-path-from", "dv_path_from"],
@@ -163,6 +180,16 @@
         path,
         ["dv-path-end", "dv_path_end"],
         hasCustomTrigger ? "bottom bottom" : "max"
+      ),
+      duration: readNumber(
+        path,
+        ["dv-path-duration", "dv_path_duration"],
+        tokens.duration ? Number(tokens.duration) : 2
+      ),
+      repeat: normalizeRepeat(
+        readAttr(path, ["dv-path-repeat", "dv_path_repeat"]) ||
+          tokens.repeat ||
+          (tokens.infinite ? "infinite" : "once")
       ),
       trigger: trigger,
       rotateGradient:
@@ -206,24 +233,36 @@
       console.info("[dv-path] Initialized", {
         path: path,
         length: length,
+        mode: options.mode,
         trigger: options.trigger || "document",
         start: options.start,
         end: options.end,
-        scrub: options.scrub
+        scrub: options.scrub,
+        duration: options.duration,
+        repeat: options.repeat
       });
     }
 
-    window.gsap.to(path, {
-      strokeDashoffset: length * options.drawTo,
-      ease: "none",
-      scrollTrigger: {
-        trigger: options.trigger || undefined,
-        start: options.start,
-        end: options.end,
-        scrub: options.scrub,
-        invalidateOnRefresh: true
-      }
-    });
+    if (options.mode === "static") {
+      window.gsap.to(path, {
+        strokeDashoffset: length * options.drawTo,
+        duration: options.duration,
+        ease: "none",
+        repeat: options.repeat
+      });
+    } else {
+      window.gsap.to(path, {
+        strokeDashoffset: length * options.drawTo,
+        ease: "none",
+        scrollTrigger: {
+          trigger: options.trigger || undefined,
+          start: options.start,
+          end: options.end,
+          scrub: options.scrub,
+          invalidateOnRefresh: true
+        }
+      });
+    }
 
     if (options.rotateGradient) {
       gradient = document.querySelector(options.rotateGradient);
@@ -307,6 +346,7 @@
     var prefersReducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
     ).matches;
+    var needsScrollTrigger = reveals.length > 0;
 
     if (!paths.length && !reveals.length) {
       return;
@@ -317,12 +357,22 @@
       return;
     }
 
-    ensureGsap()
+    if (!needsScrollTrigger) {
+      needsScrollTrigger = paths.some(function (path) {
+        return getPathOptions(path).mode !== "static";
+      });
+    }
+
+    ensureGsap(needsScrollTrigger)
       .then(function () {
-        window.gsap.registerPlugin(window.ScrollTrigger);
+        if (needsScrollTrigger) {
+          window.gsap.registerPlugin(window.ScrollTrigger);
+        }
         paths.forEach(initPath);
         reveals.forEach(initReveal);
-        window.ScrollTrigger.refresh();
+        if (needsScrollTrigger) {
+          window.ScrollTrigger.refresh();
+        }
       })
       .catch(function (error) {
         console.error("[dv-path] Initialization failed:", error);
@@ -362,7 +412,13 @@
         "dv-path-scrub",
         "dv_path_scrub",
         "dv-path-trigger",
-        "dv_path_trigger"
+        "dv_path_trigger",
+        "dv-path-mode",
+        "dv_path_mode",
+        "dv-path-duration",
+        "dv_path_duration",
+        "dv-path-repeat",
+        "dv_path_repeat"
       ]
     });
   }

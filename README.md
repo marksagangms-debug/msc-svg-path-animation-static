@@ -4,10 +4,10 @@ This works like the MnB text background animation setup:
 
 1. Add one CDN script in Webstudio custom code.
 2. Add an HTML Embed for the SVG.
-3. Add `dv_path`, `dv_path_trigger`, and `dv_path_scrub` to the SVG path.
+3. Add `dv_path`, `dv_path_mode`, `dv_path_repeat`, and `dv_path_duration` to the SVG path.
 4. Add a small CSS block for positioning.
 
-The script auto-loads GSAP and ScrollTrigger. You do not need to add separate GSAP scripts.
+The script auto-loads GSAP, and it only loads ScrollTrigger when scroll-based path or reveal animations need it. You do not need to add separate GSAP scripts.
 
 ## 1) Add the Script in Webstudio
 
@@ -53,8 +53,9 @@ Add a Webstudio HTML Embed near the top of the page. Paste this:
 
     <path
       dv_path
-      dv_path_trigger=".msc-page"
-      dv_path_scrub="1.1"
+      dv_path_mode="static"
+      dv_path_repeat="infinite"
+      dv_path_duration="2.8"
       dv_path_gradient="#msc-scroll-gradient"
       dv_path_gradient_center="720 500"
       fill="none"
@@ -74,11 +75,12 @@ The important part is this attribute on the SVG path:
 dv_path
 ```
 
-Then add the scroll trigger and scrub attributes:
+Then add the static timing attributes:
 
 ```html
-dv_path_trigger=".msc-page"
-dv_path_scrub="1.1"
+dv_path_mode="static"
+dv_path_repeat="infinite"
+dv_path_duration="2.8"
 ```
 
 That is the equivalent of the MnB typewriter attribute:
@@ -106,15 +108,15 @@ Add this in Webstudio custom CSS:
 }
 ```
 
-## 4) Add the Page Wrapper Class
+## 4) Optional Scroll Wrapper
 
-Select the main Webstudio wrapper that contains the sections you want to use for scroll timing. Add this class:
+Static mode does not need a page wrapper. If you switch a path back to scroll mode, select the main Webstudio wrapper that contains the sections you want to use for scroll timing and add this class:
 
 ```text
 msc-page
 ```
 
-This class must match the path trigger:
+That class must match the path trigger:
 
 ```html
 dv_path_trigger=".msc-page"
@@ -127,8 +129,9 @@ Use this as the default:
 ```html
 <path
   dv_path
-  dv_path_trigger=".msc-page"
-  dv_path_scrub="1.1"
+  dv_path_mode="static"
+  dv_path_repeat="once"
+  dv_path_duration="2.8"
   ...
 ></path>
 ```
@@ -138,8 +141,9 @@ In Webstudio attributes, that means:
 | Attribute | Value |
 |---|---|
 | `dv_path` | `true` |
-| `dv_path_trigger` | `.msc-page` |
-| `dv_path_scrub` | `1.1` |
+| `dv_path_mode` | `static` |
+| `dv_path_repeat` | `once` or `infinite` |
+| `dv_path_duration` | `2.8` |
 
 For debugging, temporarily add:
 
@@ -151,10 +155,21 @@ For debugging, temporarily add:
 
 ### Main Path Attribute
 
-- `dv_path`: turns the SVG path into a scroll-drawn path.
+- `dv_path`: turns the SVG path into an animated path.
 - `dv-path`: dashed alias for `dv_path`.
 
+### Static Timing
+
+- `dv_path_mode="static"`: plays the path draw animation automatically.
+- `dv-path-mode="static"`: dashed alias for `dv_path_mode`.
+- `dv_path_repeat="once"`: plays the path draw one time.
+- `dv_path_repeat="infinite"`: loops the path draw forever.
+- `dv_path_duration="2.8"`: seconds for one path draw.
+- `dv-path-repeat` and `dv-path-duration`: dashed aliases.
+
 ### Scroll Timing
+
+Scroll mode is still available by setting `dv_path_mode="scroll"` or by omitting `dv_path_mode`.
 
 - `dv_path_scrub="1.1"`: smooths the scroll animation.
 - `dv-path-scrub="1.1"`: dashed alias for `dv_path_scrub`.
@@ -236,8 +251,9 @@ Reveal attributes:
 - Script is in `Project Settings > Custom Code > Before </body>`.
 - SVG is inside an HTML Embed.
 - SVG `<path>` has `dv_path` or `dv-path`.
-- SVG `<path>` has `dv_path_trigger=".msc-page"`.
-- Your scroll wrapper has class `msc-page`.
+- Static SVG `<path>` has `dv_path_mode="static"`.
+- Static SVG `<path>` has `dv_path_repeat="once"` or `dv_path_repeat="infinite"`.
+- Static SVG `<path>` has `dv_path_duration`, for example `2.8`.
 - CSS has `.msc-path-layer`.
 - The path has a visible `stroke`.
 
@@ -247,7 +263,8 @@ Reveal attributes:
 - If you recently changed the script, add a cache-buster to the CDN URL, for example `?v=latest`.
 - Add `dv_path_debug="true"` to the path and check the browser console for a `[dv-path] Initialized` message.
 - If the path is invisible, check `stroke`, `stroke-width`, and `z-index`.
-- If the path finishes too early, add class `msc-page` to the wrapper that contains all scroll sections.
+- If static mode is too fast or slow, adjust `dv_path_duration`.
+- If scroll mode finishes too early, add class `msc-page` to the wrapper that contains all scroll sections.
 - If the path appears behind the page background, set your section backgrounds to transparent or raise the path layer `z-index`.
 - If Webstudio content loads after the script, run `window.dvPathRefresh()` from custom code.
 

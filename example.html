@@ -131,8 +131,9 @@
 
         <path
           dv-path
-          dv-path-trigger=".msc-page"
-          dv-path-scrub="1.1"
+          dv-path-mode="static"
+          dv-path-repeat="infinite"
+          dv-path-duration="2.8"
           dv-path-gradient="#msc-scroll-gradient"
           dv-path-gradient-center="720 500"
           fill="none"
@@ -158,7 +159,7 @@
             <h2>Target the wrapper.</h2>
             <p>
               The path uses custom attributes, so the same CDN script can animate any SVG path you place in an
-              embed.
+              embed without tying the draw timing to scroll.
             </p>
           </div>
           <div class="visual"></div>
@@ -170,8 +171,7 @@
           <div>
             <h2>Control the timing.</h2>
             <p>
-              Change the trigger, start, end, scrub, path direction, and gradient rotation without editing the
-              JavaScript.
+              Change the duration, repeat mode, path direction, and gradient rotation without editing the JavaScript.
             </p>
           </div>
           <div class="visual"></div>
