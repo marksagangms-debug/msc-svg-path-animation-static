@@ -207,6 +207,8 @@ Scroll mode is still available by setting `ms_path_mode="scroll"` or by omitting
 - `ms-path-scrub`: dashed alias for `ms_path_scrub`.
 - `ms_path_trigger=".msc-page"`: the wrapper that controls the scroll range.
 - `ms-path-trigger=".msc-page"`: dashed alias for `ms_path_trigger`.
+- `ms_path_scroll_distance="1800"`: spreads the path draw over 1800px of scroll. Use this when the trigger section is short and the animation feels too fast.
+- `ms-path-scroll-distance`: dashed alias for `ms_path_scroll_distance`.
 
 These are built-in defaults, so you usually do not need to add them:
 
@@ -218,6 +220,7 @@ Advanced overrides are still supported:
 - `ms_path_trigger=".custom-wrapper"`
 - `ms_path_start="top center"`
 - `ms_path_end="bottom top"`
+- `ms_path_scroll_distance="+=2000"`
 
 ### Draw Direction
 

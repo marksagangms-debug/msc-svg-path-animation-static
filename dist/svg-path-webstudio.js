@@ -135,6 +135,22 @@
     return raw === null || raw === "" ? fallback : raw;
   }
 
+  function readDistance(el, attrs) {
+    var raw = readAttr(el, attrs);
+    var value;
+
+    if (raw === null || raw === "") {
+      return null;
+    }
+
+    value = Number(raw);
+    if (Number.isFinite(value)) {
+      return "+=" + value;
+    }
+
+    return raw;
+  }
+
   function readScrub(el, attrs, fallback) {
     var raw = readAttr(el, attrs);
     var value;
@@ -256,6 +272,7 @@
     var trigger = hasCustomTrigger
       ? resolveTarget(path, triggerSelector, getDefaultTrigger())
       : null;
+    var scrollDistance = readDistance(path, pathAttr("scroll-distance"));
 
     return {
       mode: normalizeMode(
@@ -282,7 +299,7 @@
       end: readString(
         path,
         pathAttr("end"),
-        hasCustomTrigger ? "bottom bottom" : "max"
+        scrollDistance || (hasCustomTrigger ? "bottom bottom" : "max")
       ),
       duration: readNumber(
         path,
@@ -571,6 +588,10 @@
         "ms_path_trigger",
         "dv-path-trigger",
         "dv_path_trigger",
+        "ms-path-scroll-distance",
+        "ms_path_scroll_distance",
+        "dv-path-scroll-distance",
+        "dv_path_scroll_distance",
         "ms-path-mode",
         "ms_path_mode",
         "dv-path-mode",
