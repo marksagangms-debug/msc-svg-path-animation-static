@@ -495,6 +495,26 @@
     });
   }
 
+  function refreshScrollTrigger() {
+    if (!window.ScrollTrigger) {
+      return;
+    }
+
+    window.ScrollTrigger.refresh();
+  }
+
+  function scheduleScrollTriggerRefresh() {
+    if (!window.ScrollTrigger) {
+      return;
+    }
+
+    refreshScrollTrigger();
+
+    window.requestAnimationFrame(refreshScrollTrigger);
+    window.setTimeout(refreshScrollTrigger, 120);
+    window.setTimeout(refreshScrollTrigger, 500);
+  }
+
   function initAll() {
     var paths = Array.prototype.slice.call(
       document.querySelectorAll(
@@ -538,7 +558,7 @@
         paths.forEach(initPath);
         reveals.forEach(initReveal);
         if (needsScrollTrigger) {
-          window.ScrollTrigger.refresh();
+          scheduleScrollTriggerRefresh();
         }
       })
       .catch(function (error) {
@@ -547,10 +567,8 @@
   }
 
   window.msPathRefresh = function () {
-    if (window.ScrollTrigger) {
-      window.ScrollTrigger.refresh();
-    }
     initAll();
+    scheduleScrollTriggerRefresh();
   };
 
   window.dvPathRefresh = window.msPathRefresh;
@@ -629,4 +647,6 @@
     initAll();
     watchForLatePaths();
   }
+
+  window.addEventListener("load", scheduleScrollTriggerRefresh);
 })();
