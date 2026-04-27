@@ -183,8 +183,9 @@ Legacy `dv_path` and `dv-path` attributes still work, but new embeds should use 
 
 Scroll mode is still available by setting `ms_path_mode="scroll"` or by omitting `ms_path_mode`.
 
-- `ms_path_scrub="1.1"`: smooths the scroll animation.
-- `ms-path-scrub="1.1"`: dashed alias for `ms_path_scrub`.
+- `ms_path_scrub="true"`: tracks scroll directly without delayed smoothing.
+- `ms_path_scrub="0.2"`: optional light smoothing. Higher values feel more delayed.
+- `ms-path-scrub`: dashed alias for `ms_path_scrub`.
 - `ms_path_trigger=".msc-page"`: the wrapper that controls the scroll range.
 - `ms-path-trigger=".msc-page"`: dashed alias for `ms_path_trigger`.
 

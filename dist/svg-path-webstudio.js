@@ -125,6 +125,26 @@
     return raw === null || raw === "" ? fallback : raw;
   }
 
+  function readScrub(el, attrs, fallback) {
+    var raw = readAttr(el, attrs);
+    var value;
+
+    if (raw === null || raw === "") {
+      return fallback;
+    }
+
+    if (raw === "true") {
+      return true;
+    }
+
+    if (raw === "false") {
+      return false;
+    }
+
+    value = Number(raw);
+    return Number.isFinite(value) ? value : fallback;
+  }
+
   function parseProgress(raw, fallback) {
     var value;
 
@@ -218,7 +238,7 @@
         pathAttr("to"),
         tokens.reverse ? 1 : 0
       ),
-      scrub: readNumber(path, pathAttr("scrub"), 1),
+      scrub: readScrub(path, pathAttr("scrub"), true),
       start: readString(
         path,
         pathAttr("start"),
