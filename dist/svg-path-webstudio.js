@@ -202,6 +202,9 @@
   }
 
   function resolveTarget(el, selector, fallback) {
+    var closestTarget;
+    var ownerSvg;
+
     if (!selector || selector === "self") {
       return fallback || el;
     }
@@ -210,7 +213,29 @@
       return el.parentElement || fallback || el;
     }
 
-    return document.querySelector(selector) || fallback || el;
+    closestTarget = el.closest ? el.closest(selector) : null;
+    ownerSvg = el.closest ? el.closest("svg") : null;
+    return (
+      closestTarget ||
+      (ownerSvg && ownerSvg.querySelector(selector)) ||
+      document.querySelector(selector) ||
+      fallback ||
+      el
+    );
+  }
+
+  function resolveSelector(el, selector) {
+    var ownerSvg;
+
+    if (!selector) {
+      return null;
+    }
+
+    ownerSvg = el.closest ? el.closest("svg") : null;
+    return (
+      (ownerSvg && ownerSvg.querySelector(selector)) ||
+      document.querySelector(selector)
+    );
   }
 
   function getDefaultTrigger() {
@@ -328,6 +353,7 @@
 
     length = path.getTotalLength();
     options = getPathOptions(path);
+    window.gsap.killTweensOf(path);
     setPathProgress(path, length, options.drawFrom);
 
     if (options.debug) {
@@ -381,7 +407,7 @@
     }
 
     if (options.rotateGradient) {
-      gradient = document.querySelector(options.rotateGradient);
+      gradient = resolveSelector(path, options.rotateGradient);
       rotateCenter = options.rotateCenter ? " " + options.rotateCenter : "";
 
       if (gradient) {

@@ -247,6 +247,27 @@ ms_path_gradient_duration="5"
 - `ms_path_gradient_center`: SVG rotation center.
 - `ms_path_gradient_duration`: seconds for one full rotation.
 
+## Multiple SVGs on One Page
+
+You can use more than one animated SVG on the same page. Each SVG path needs its own `ms_path` attributes.
+
+For static paths, duplicate the SVG embed and keep the static attributes on each path.
+
+For scroll paths, use the same trigger only if both paths should animate across the same scroll range:
+
+```html
+ms_path_trigger=".msc-page"
+```
+
+If each SVG should animate in its own section, give each section a unique class and point each path at its own trigger:
+
+```html
+ms_path_trigger=".msc-page-one"
+ms_path_trigger=".msc-page-two"
+```
+
+Gradient selectors are resolved inside the current SVG first, so duplicated gradient IDs inside separate SVG embeds are supported.
+
 ## Optional Reveal Animation
 
 You can fade elements up on scroll by adding `ms-reveal`.
