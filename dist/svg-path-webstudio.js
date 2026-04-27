@@ -11,6 +11,16 @@
     PATH_ATTR_LEGACY,
     PATH_ATTR_LEGACY_ALT
   ];
+  var PATH_SELECTOR_ATTRS = PATH_ATTRS.concat([
+    "ms-path-mode",
+    "ms_path_mode",
+    "dv-path-mode",
+    "dv_path_mode",
+    "ms-path-trigger",
+    "ms_path_trigger",
+    "dv-path-trigger",
+    "dv_path_trigger"
+  ]);
   var REVEAL_ATTR = "ms-reveal";
   var REVEAL_ATTR_LEGACY = "dv-reveal";
   var REVEAL_ATTRS = [REVEAL_ATTR, REVEAL_ATTR_LEGACY];
@@ -438,7 +448,7 @@
   function initAll() {
     var paths = Array.prototype.slice.call(
       document.querySelectorAll(
-        PATH_ATTRS.map(function (attr) {
+        PATH_SELECTOR_ATTRS.map(function (attr) {
           return "[" + attr + "]";
         }).join(",")
       )

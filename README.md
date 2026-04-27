@@ -275,6 +275,8 @@ Reveal attributes:
 ## Troubleshooting
 
 - If nothing animates, confirm the script URL uses `msc-svg-path-animation`.
+- In Webstudio, set `ms_path` or `ms-path` to `true`; do not leave the marker value blank.
+- Make sure `ms_path_trigger=".msc-page"` exactly matches the class on your scroll wrapper. `mse-page` and `msc-page` are different classes.
 - If you recently changed the script, add a cache-buster to the CDN URL, for example `?v=latest`.
 - Add `ms_path_debug="true"` to the path and check the browser console for a `[ms-path] Initialized` message.
 - If the path is invisible, check `stroke`, `stroke-width`, and `z-index`.
