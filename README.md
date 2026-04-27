@@ -328,6 +328,7 @@ Reveal attributes:
 - If the path is invisible, check `stroke`, `stroke-width`, and `z-index`.
 - If static mode is too fast or slow, adjust `ms_path_duration`.
 - If scroll mode finishes too early, add class `msc-page` to the wrapper that contains all scroll sections.
+- If scroll mode feels stuttery only on a real phone, update to the latest script and confirm your path layer CSS includes `pointer-events: none;`. The script ignores mobile browser address-bar resize events so ScrollTrigger does not refresh during normal touch scrolling.
 - If the path appears behind the page background, set your section backgrounds to transparent or raise the path layer `z-index`.
 - If Webstudio content loads after the script, run `window.msPathRefresh()` from custom code.
 

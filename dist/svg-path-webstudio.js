@@ -503,6 +503,16 @@
     window.ScrollTrigger.refresh();
   }
 
+  function configureScrollTrigger() {
+    if (!window.ScrollTrigger) {
+      return;
+    }
+
+    window.ScrollTrigger.config({
+      ignoreMobileResize: true
+    });
+  }
+
   function scheduleScrollTriggerRefresh() {
     if (!window.ScrollTrigger) {
       return;
@@ -554,6 +564,7 @@
       .then(function () {
         if (needsScrollTrigger) {
           window.gsap.registerPlugin(window.ScrollTrigger);
+          configureScrollTrigger();
         }
         paths.forEach(initPath);
         reveals.forEach(initReveal);
