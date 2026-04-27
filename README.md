@@ -136,6 +136,7 @@ Use this as the default:
   ms_path_mode="static"
   ms_path_repeat="once"
   ms_path_duration="2.8"
+  ms_path_delay="0"
   ms_path_tail="0.32"
   ms_path_offset="25%"
   ...
@@ -150,6 +151,7 @@ In Webstudio attributes, that means:
 | `ms_path_mode` | `static` |
 | `ms_path_repeat` | `once` or `infinite` |
 | `ms_path_duration` | `2.8` |
+| `ms_path_delay` | `0.5` |
 | `ms_path_tail` | `0.32` |
 | `ms_path_offset` | `0%`, `25%`, or `0.25` |
 
@@ -175,9 +177,10 @@ Legacy `dv_path` and `dv-path` attributes still work, but new embeds should use 
 - `ms_path_repeat="once"`: plays the path draw one time.
 - `ms_path_repeat="infinite"`: loops the path draw forever.
 - `ms_path_duration="2.8"`: seconds for one path draw.
+- `ms_path_delay="0.5"`: seconds to wait before the repeated static animation starts again.
 - `ms_path_tail="0.32"`: visible tail length as a fraction of the full path. The head moves first and the tail follows behind it.
 - `ms_path_offset="25%"`: where the static animation starts along the path. You can use percentages like `25%` or fractions like `0.25`.
-- `ms-path-repeat`, `ms-path-duration`, `ms-path-tail`, and `ms-path-offset`: dashed aliases.
+- `ms-path-repeat`, `ms-path-duration`, `ms-path-delay`, `ms-path-tail`, and `ms-path-offset`: dashed aliases.
 
 ### Scroll Timing
 

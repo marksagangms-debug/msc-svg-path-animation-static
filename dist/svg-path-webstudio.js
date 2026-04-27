@@ -264,6 +264,11 @@
         pathAttr("duration"),
         tokens.duration ? Number(tokens.duration) : 2
       ),
+      delay: readNumber(
+        path,
+        pathAttr("delay"),
+        tokens.delay ? Number(tokens.delay) : 0
+      ),
       repeat: normalizeRepeat(
         readAttr(path, pathAttr("repeat")) ||
           tokens.repeat ||
@@ -335,6 +340,7 @@
         end: options.end,
         scrub: options.scrub,
         duration: options.duration,
+        delay: options.delay,
         repeat: options.repeat,
         tail: options.tail,
         offset: options.offset
@@ -357,7 +363,8 @@
           : tailLength + startOffset,
         duration: options.duration,
         ease: "none",
-        repeat: options.repeat
+        repeat: options.repeat,
+        repeatDelay: options.delay
       });
     } else {
       window.gsap.to(path, {
@@ -546,6 +553,10 @@
         "ms_path_duration",
         "dv-path-duration",
         "dv_path_duration",
+        "ms-path-delay",
+        "ms_path_delay",
+        "dv-path-delay",
+        "dv_path_delay",
         "ms-path-repeat",
         "ms_path_repeat",
         "dv-path-repeat",
