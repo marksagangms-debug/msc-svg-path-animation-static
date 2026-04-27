@@ -18,14 +18,30 @@ In Webstudio:
 3. Paste this in `Before </body>`.
 4. Publish.
 
+For active testing, use `@main` with a cache-busting `v=` value. Change the `v=` value after every push:
+
 ```html
-<script src="https://cdn.jsdelivr.net/gh/marksagangms-debug/msc-svg-path-animation-static@main/dist/svg-path-webstudio.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/marksagangms-debug/msc-svg-path-animation-static@main/dist/svg-path-webstudio.js?v=dev-001"></script>
 ```
 
-For production, create a GitHub release and use a version tag instead of `main`:
+For production, pin the script to a commit or release tag instead of using `@main`:
+
+```html
+<script src="https://cdn.jsdelivr.net/gh/marksagangms-debug/msc-svg-path-animation-static@54f869c/dist/svg-path-webstudio.js"></script>
+```
+
+When you create a release, use the release tag:
 
 ```html
 <script src="https://cdn.jsdelivr.net/gh/marksagangms-debug/msc-svg-path-animation-static@v1.0.0/dist/svg-path-webstudio.js"></script>
+```
+
+Avoid `raw.githubusercontent.com` for Webstudio scripts. Use jsDelivr URLs so you can cache-bust with `?v=...`, pin to commits or tags, and purge the CDN when needed.
+
+To purge the current `@main` jsDelivr cache, open:
+
+```text
+https://purge.jsdelivr.net/gh/marksagangms-debug/msc-svg-path-animation-static@main/dist/svg-path-webstudio.js
 ```
 
 ## 2) Add the SVG HTML Embed
@@ -280,7 +296,10 @@ Reveal attributes:
 - If nothing animates, confirm the script URL uses `msc-svg-path-animation`.
 - In Webstudio, set `ms_path` or `ms-path` to `true`; do not leave the marker value blank.
 - Make sure `ms_path_trigger=".msc-page"` exactly matches the class on your scroll wrapper. `mse-page` and `msc-page` are different classes.
-- If you recently changed the script, add a cache-buster to the CDN URL, for example `?v=latest`.
+- If you recently changed the script, update the cache-buster in Webstudio, for example from `?v=dev-001` to `?v=dev-002`.
+- If Webstudio still shows old behavior, purge jsDelivr with `https://purge.jsdelivr.net/gh/marksagangms-debug/msc-svg-path-animation-static@main/dist/svg-path-webstudio.js`.
+- In browser DevTools > Network, confirm the exact script URL is loading, the `v=` value is current, the response is `200`, and there are no GSAP console errors.
+- Do not add separate GSAP scripts unless you intentionally want to manage GSAP yourself. This script already loads GSAP and ScrollTrigger only when needed.
 - Add `ms_path_debug="true"` to the path and check the browser console for a `[ms-path] Initialized` message.
 - If the path is invisible, check `stroke`, `stroke-width`, and `z-index`.
 - If static mode is too fast or slow, adjust `ms_path_duration`.
