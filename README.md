@@ -205,6 +205,7 @@ Scroll mode is still available by setting `ms_path_mode="scroll"` or by omitting
 - `ms_path_scrub="true"`: tracks scroll directly without delayed smoothing.
 - `ms_path_scrub="0.2"`: optional light smoothing. Higher values feel more delayed.
 - `ms-path-scrub`: dashed alias for `ms_path_scrub`.
+- `ms_path_mobile_scrub="0.35"`: override the touch-device smoothing used when `ms_path_scrub="true"`. The default on real touch devices is `0.2` to reduce SVG repaint pressure during scroll.
 - `ms_path_trigger=".msc-page"`: the wrapper that controls the scroll range.
 - `ms-path-trigger=".msc-page"`: dashed alias for `ms_path_trigger`.
 - `ms_path_scroll_distance="1800"`: spreads the path draw over 1800px of scroll. Use this when the trigger section is short and the animation feels too fast.
@@ -244,11 +245,13 @@ ms_path_to="1"
 ms_path_gradient="#msc-scroll-gradient"
 ms_path_gradient_center="720 500"
 ms_path_gradient_duration="5"
+ms_path_gradient_mobile="true"
 ```
 
 - `ms_path_gradient`: CSS selector for the gradient to rotate.
 - `ms_path_gradient_center`: SVG rotation center.
 - `ms_path_gradient_duration`: seconds for one full rotation.
+- `ms_path_gradient_mobile`: set to `true` to keep gradient rotation enabled on touch devices. Mobile disables continuous gradient rotation by default because it can cause visible SVG repaint stutter while scrolling.
 
 ## Multiple SVGs on One Page
 

@@ -171,6 +171,16 @@
     return Number.isFinite(value) ? value : fallback;
   }
 
+  function readBoolean(el, attrs, fallback) {
+    var raw = readAttr(el, attrs);
+
+    if (raw === null || raw === "") {
+      return fallback;
+    }
+
+    return raw !== "false";
+  }
+
   function parseProgress(raw, fallback) {
     var value;
 
@@ -215,6 +225,24 @@
 
   function clamp(value, min, max) {
     return Math.min(Math.max(value, min), max);
+  }
+
+  function isTouchDevice() {
+    return (
+      (window.matchMedia && window.matchMedia("(pointer: coarse)").matches) ||
+      navigator.maxTouchPoints > 0
+    );
+  }
+
+  function resolveScrollScrub(path, mode) {
+    var scrub = readScrub(path, pathAttr("scrub"), true);
+    var mobileScrub = readScrub(path, pathAttr("mobile-scrub"), null);
+
+    if (mode === "scroll" && scrub === true && isTouchDevice()) {
+      return mobileScrub === null ? 0.2 : mobileScrub;
+    }
+
+    return scrub;
   }
 
   function resolveTarget(el, selector, fallback) {
@@ -273,13 +301,14 @@
       ? resolveTarget(path, triggerSelector, getDefaultTrigger())
       : null;
     var scrollDistance = readDistance(path, pathAttr("scroll-distance"));
+    var mode = normalizeMode(
+      readAttr(path, pathAttr("mode")) ||
+        tokens.mode ||
+        (tokens.static ? "static" : "scroll")
+    );
 
     return {
-      mode: normalizeMode(
-        readAttr(path, pathAttr("mode")) ||
-          tokens.mode ||
-          (tokens.static ? "static" : "scroll")
-      ),
+      mode: mode,
       drawFrom: readNumber(
         path,
         pathAttr("from"),
@@ -290,7 +319,7 @@
         pathAttr("to"),
         tokens.reverse ? 1 : 0
       ),
-      scrub: readScrub(path, pathAttr("scrub"), true),
+      scrub: resolveScrollScrub(path, mode),
       start: readString(
         path,
         pathAttr("start"),
@@ -348,6 +377,11 @@
         path,
         pathAttr("gradient-center"),
         ""
+      ),
+      rotateGradientOnMobile: readBoolean(
+        path,
+        pathAttr("gradient-mobile"),
+        false
       ),
       debug: readAttr(path, pathAttr("debug")) !== null
     };
@@ -423,7 +457,10 @@
       });
     }
 
-    if (options.rotateGradient) {
+    if (
+      options.rotateGradient &&
+      (!isTouchDevice() || options.rotateGradientOnMobile)
+    ) {
       gradient = resolveSelector(path, options.rotateGradient);
       rotateCenter = options.rotateCenter ? " " + options.rotateCenter : "";
 
@@ -613,6 +650,10 @@
         "ms_path_scrub",
         "dv-path-scrub",
         "dv_path_scrub",
+        "ms-path-mobile-scrub",
+        "ms_path_mobile_scrub",
+        "dv-path-mobile-scrub",
+        "dv_path_mobile_scrub",
         "ms-path-trigger",
         "ms_path_trigger",
         "dv-path-trigger",
@@ -644,7 +685,11 @@
         "ms-path-offset",
         "ms_path_offset",
         "dv-path-offset",
-        "dv_path_offset"
+        "dv_path_offset",
+        "ms-path-gradient-mobile",
+        "ms_path_gradient_mobile",
+        "dv-path-gradient-mobile",
+        "dv_path_gradient_mobile"
       ]
     });
   }
