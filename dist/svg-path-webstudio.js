@@ -245,6 +245,10 @@
     return scrub;
   }
 
+  function normalizeMobileScroll(value) {
+    return value === "scrub" ? "scrub" : "play";
+  }
+
   function resolveTarget(el, selector, fallback) {
     var closestTarget;
     var ownerSvg;
@@ -320,6 +324,9 @@
         tokens.reverse ? 1 : 0
       ),
       scrub: resolveScrollScrub(path, mode),
+      mobileScroll: normalizeMobileScroll(
+        readString(path, pathAttr("mobile-scroll"), "play")
+      ),
       start: readString(
         path,
         pathAttr("start"),
@@ -397,6 +404,7 @@
     var options;
     var gradient;
     var rotateCenter;
+    var useMobilePlay;
 
     if (path.dataset[READY_FLAG] === "true" || !path.getTotalLength) {
       return;
@@ -404,6 +412,10 @@
 
     length = path.getTotalLength();
     options = getPathOptions(path);
+    useMobilePlay =
+      options.mode === "scroll" &&
+      isTouchDevice() &&
+      options.mobileScroll !== "scrub";
     window.gsap.killTweensOf(path);
     setPathProgress(path, length, options.drawFrom);
 
@@ -416,6 +428,8 @@
         start: options.start,
         end: options.end,
         scrub: options.scrub,
+        mobileScroll: options.mobileScroll,
+        mobilePlay: useMobilePlay,
         duration: options.duration,
         delay: options.delay,
         repeat: options.repeat,
@@ -442,6 +456,20 @@
         ease: "none",
         repeat: options.repeat,
         repeatDelay: options.delay
+      });
+    } else if (useMobilePlay) {
+      window.gsap.to(path, {
+        strokeDashoffset: length * options.drawTo,
+        duration: options.duration,
+        delay: options.delay,
+        ease: "none",
+        scrollTrigger: {
+          trigger: options.trigger || undefined,
+          start: options.start,
+          toggleActions: "play none none none",
+          once: true,
+          invalidateOnRefresh: true
+        }
       });
     } else {
       window.gsap.to(path, {
@@ -654,6 +682,10 @@
         "ms_path_mobile_scrub",
         "dv-path-mobile-scrub",
         "dv_path_mobile_scrub",
+        "ms-path-mobile-scroll",
+        "ms_path_mobile_scroll",
+        "dv-path-mobile-scroll",
+        "dv_path_mobile_scroll",
         "ms-path-trigger",
         "ms_path_trigger",
         "dv-path-trigger",

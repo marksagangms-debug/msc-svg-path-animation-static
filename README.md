@@ -205,7 +205,9 @@ Scroll mode is still available by setting `ms_path_mode="scroll"` or by omitting
 - `ms_path_scrub="true"`: tracks scroll directly without delayed smoothing.
 - `ms_path_scrub="0.2"`: optional light smoothing. Higher values feel more delayed.
 - `ms-path-scrub`: dashed alias for `ms_path_scrub`.
-- `ms_path_mobile_scrub="0.35"`: override the touch-device smoothing used when `ms_path_scrub="true"`. The default on real touch devices is `0.2` to reduce SVG repaint pressure during scroll.
+- `ms_path_mobile_scroll="play"`: default touch-device behavior. The path draws as a normal animation when the trigger is reached instead of repainting the SVG on every scroll frame.
+- `ms_path_mobile_scroll="scrub"`: opt back into scroll-scrubbed SVG drawing on touch devices.
+- `ms_path_mobile_scrub="0.35"`: override touch-device smoothing when `ms_path_mobile_scroll="scrub"` and `ms_path_scrub="true"`.
 - `ms_path_trigger=".msc-page"`: the wrapper that controls the scroll range.
 - `ms-path-trigger=".msc-page"`: dashed alias for `ms_path_trigger`.
 - `ms_path_scroll_distance="1800"`: spreads the path draw over 1800px of scroll. Use this when the trigger section is short and the animation feels too fast.
@@ -331,7 +333,7 @@ Reveal attributes:
 - If the path is invisible, check `stroke`, `stroke-width`, and `z-index`.
 - If static mode is too fast or slow, adjust `ms_path_duration`.
 - If scroll mode finishes too early, add class `msc-page` to the wrapper that contains all scroll sections.
-- If scroll mode feels stuttery only on a real phone, update to the latest script and confirm your path layer CSS includes `pointer-events: none;`. The script ignores mobile browser address-bar resize events so ScrollTrigger does not refresh during normal touch scrolling.
+- If scroll mode feels stuttery only on a real phone, update to the latest script and confirm your path layer CSS includes `pointer-events: none;`. On touch devices, scroll paths draw as a normal trigger-based animation by default because continuous SVG stroke repainting can block native scrolling.
 - If the path appears behind the page background, set your section backgrounds to transparent or raise the path layer `z-index`.
 - If Webstudio content loads after the script, run `window.msPathRefresh()` from custom code.
 
